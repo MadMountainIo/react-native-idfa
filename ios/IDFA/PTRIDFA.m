@@ -35,11 +35,13 @@ RCT_EXPORT_METHOD(getIDFA:(RCTPromiseResolveBlock)resolve
 RCT_EXPORT_METHOD(requestTrackingPermission:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+    NSError *error = nil;
+
     if (@available(iOS 14, *)) {
         [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
             switch (status) {
                 case ATTrackingManagerAuthorizationStatusNotDetermined:
-                    reject(@"not_determined");
+                    reject(@"not_determined", @"Not determined", error);
                     break;
                     
                 case ATTrackingManagerAuthorizationStatusAuthorized:
@@ -48,7 +50,7 @@ RCT_EXPORT_METHOD(requestTrackingPermission:(RCTPromiseResolveBlock)resolve
                     
                 case ATTrackingManagerAuthorizationStatusDenied:
                 case ATTrackingManagerAuthorizationStatusRestricted:
-                    reject(@"denied");
+                    reject(@"denied", @"Denied", error);
                     break;
             }
         }];
